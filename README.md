@@ -54,7 +54,7 @@ Clone the repo and symlink each folder into `~/.config/`:
 git clone git@github.com:Stochastic-Batman/arch-dotfiles.git ~/arch-dotfiles
 cd ~/arch-dotfiles
 
-for dir in hypr kitty nvim rofi waybar; do
+for dir in hypr kitty nvim rofi ssh waybar; do
     ln -sf ~/arch-dotfiles/$dir ~/.config/$dir
 done
 
