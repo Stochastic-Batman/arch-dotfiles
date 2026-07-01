@@ -1,0 +1,119 @@
+configuration {
+    modi: "drun";
+    show-icons: true;
+    font: "JetBrainsMono Nerd Font 12";
+}
+
+* {
+    bg:         #1a1a2e;
+    bg-alt:     #2d1b3d;
+    fg:         #c0caf5;
+    fg-dim:     #565f89;
+    purple:     #7232ad;
+    purple-dim: rgba(114,50,173,0.3);
+
+    background-color: @bg;
+    text-color:       @fg;
+    border-color:     @purple;
+}
+
+window {
+    background-color: @bg;
+    border:           2px solid;
+    border-color:     @purple;
+    border-radius:    10px;
+    width:            500px;
+}
+
+mainbox {
+    background-color: transparent;
+    padding:          10px;
+}
+
+inputbar {
+    background-color: @bg-alt;
+    border-radius:    6px;
+    padding:          8px 12px;
+    margin:           0 0 8px 0;
+}
+
+entry {
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+prompt, case-indicator {
+    background-color: transparent;
+    text-color:       @purple;
+}
+
+listview {
+    background-color: transparent;
+    lines:            8;
+    spacing:          4px;
+}
+
+element {
+    background-color: transparent;
+    border-radius:    6px;
+    padding:          6px 10px;
+    text-color:       @fg;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+element normal.urgent {
+    background-color: transparent;
+    text-color:       #f7768e;
+}
+
+element normal.active {
+    background-color: transparent;
+    text-color:       @purple;
+}
+
+element alternate.normal {
+    background-color: transparent;
+    text-color:       @fg;
+}
+
+element alternate.urgent {
+    background-color: transparent;
+    text-color:       #f7768e;
+}
+
+element alternate.active {
+    background-color: transparent;
+    text-color:       @purple;
+}
+
+element selected.normal {
+    background-color: @purple-dim;
+    text-color:       @fg;
+    border:           1px solid;
+    border-color:     @purple;
+}
+
+element selected.urgent {
+    background-color: @purple-dim;
+    text-color:       #f7768e;
+}
+
+element selected.active {
+    background-color: @purple-dim;
+    text-color:       @purple;
+}
+
+element-text {
+    background-color: transparent;
+    text-color:       inherit;
+    vertical-align:   0.5;
+}
+
+element-icon {
+    background-color: transparent;
+    size:             24px;
+}
