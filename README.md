@@ -46,6 +46,63 @@ arch-dotfiles/
     └── style.css            # styling
 ```
 
+## Prerequisites
+
+If config files are the only thing that matter, skip this section (but keep in mind, `nvim`'s language servers do need programming languages and their package managers installed):
+
+### 1. Enable multilib repo
+Edit `/etc/pacman.conf` and uncomment the `[multilib]` section (both `[multilib]` and the line below it), then:
+```bash
+sudo pacman -Syu
+```
+
+### 2. Official packages
+```bash
+sudo pacman -S \
+  base-devel git neovim \
+  mesa vulkan-radeon libva-mesa-driver \
+  pipewire pipewire-pulse pipewire-alsa wireplumber \
+  hyprland kitty waybar rofi-wayland hyprpaper hyprlock hypridle \
+  xdg-desktop-portal-hyprland qt5-wayland qt6-wayland polkit-kde-agent \
+  grim slurp swappy wl-clipboard \
+  brightnessctl playerctl dunst nemo network-manager-applet pavucontrol \
+  gcc rust ocaml opam nodejs npm python python-pip uv clang cmake \
+  glfw-x11 glew freeglut mesa-utils \
+  keepassxc mpv thunderbird firefox okular docker openssh \
+  telegram-desktop steam \
+  ttf-jetbrains-mono-nerd noto-fonts \
+  texlive-basic texlive-latex texlive-latexrecommended texlive-latexextra \
+  texlive-fontsextra texlive-mathscience texlive-binextra texlive-langother
+```
+
+### 3. AUR helper (paru)
+```bash
+cd /tmp
+git clone https://aur.archlinux.org/paru.git
+cd paru
+makepkg -si
+```
+
+### 4. AUR packages
+```bash
+paru -S google-chrome shotcut discord
+```
+
+### 5. OCaml LSP
+```bash
+opam init
+eval $(opam env --switch=default)
+opam install ocaml-lsp-server
+echo 'eval $(opam env)' >> ~/.bashrc
+```
+
+### 6. SSH key for GitHub
+```bash
+ssh-keygen -t ed25519 -C "EMAIL"
+cat ~/.ssh/id_ed25519.pub  # add this to GitHub -> Settings -> SSH keys
+git config --global url."git@github.com:".insteadOf "https://github.com/"
+```
+
 ## Restore
 
 Clone the repo and symlink each folder into `~/.config/`:
