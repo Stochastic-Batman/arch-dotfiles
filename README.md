@@ -85,7 +85,7 @@ makepkg -si
 
 ### 4. AUR packages
 ```bash
-paru -S google-chrome shotcut discord
+paru -S google-chrome shotcut discord localsend-bin
 ```
 
 ### 5. OCaml LSP
