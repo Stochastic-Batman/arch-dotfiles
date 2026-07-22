@@ -68,7 +68,7 @@ sudo pacman -S \
   brightnessctl playerctl dunst nemo network-manager-applet pavucontrol \
   gcc rust ocaml opam nodejs npm python python-pip uv clang cmake \
   glfw-x11 glew freeglut mesa-utils \
-  keepassxc mpv thunderbird firefox okular docker openssh \
+  keepassxc mpv firefox okular docker openssh \
   telegram-desktop steam \
   ttf-jetbrains-mono-nerd noto-fonts \
   texlive-basic texlive-latex texlive-latexrecommended texlive-latexextra \
