@@ -38,6 +38,7 @@ arch-dotfiles/
 ├── rofi/
 │   └── config.rasi         # rofi launcher theme
 ├── shell/
+|   ├── .bashrc             # opam's auto generated messsage + custom OpenSpiel helpers
 │   └── .bash_profile       # auto-login + auto-start Hyprland on tty1
 ├── ssh/
 │   └── config              # GitHub uses ed25519 key
@@ -116,6 +117,7 @@ for dir in hypr kitty nvim rofi ssh waybar; do
 done
 
 ln -sf ~/arch-dotfiles/shell/.bash_profile ~/.bash_profile
+ln -sf ~/arch-dotfiles/shell/.bashrc ~/.bashrc
 ln -sf ~/arch-dotfiles/ssh/config ~/.ssh/config
 ```
 
