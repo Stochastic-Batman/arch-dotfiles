@@ -64,6 +64,27 @@ open_spiel_copy() {
 
     sed -i "s/OPEN_SPIEL_GAMES_${src_upper}_H_/OPEN_SPIEL_GAMES_${dest_upper}_H_/g" "$dest_h"
 
+	local pyspiel_test="../python/tests/pyspiel_test.py"
+    if [[ -f "$pyspiel_test" ]]; then
+        awk -v new_game="$dest_base" '
+        BEGIN { inserted = 0 }
+        /EXPECTED_MANDATORY_GAMES = frozenset\(\[/ { in_set = 1 }
+        in_set && /\]\)/ { in_set = 0 }
+        in_set && !inserted && /"/ {
+            match($0, /"([^"]+)"/, arr)
+            if (arr[1] > new_game) {
+                print "    \"" new_game "\","
+                inserted = 1
+            }
+        }
+        { print }
+        ' "$pyspiel_test" > "${pyspiel_test}.tmp" && mv "${pyspiel_test}.tmp" "$pyspiel_test"
+        
+        echo "Added '$dest_base' to '$pyspiel_test'."
+    else
+        echo "Warning: Could not find '$pyspiel_test'"
+    fi
+
     echo "Updated boilerplate references in '$dest_dir_name' files."
 }
 
