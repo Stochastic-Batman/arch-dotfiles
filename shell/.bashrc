@@ -161,3 +161,27 @@ with open(filepath, "w") as f:
 print(f"Updated '{filepath}' with entries for '{new_game}'")
 EOF
 }
+
+# --- Bluetooth Audio Toggle Functions ---
+bt_on() {
+    echo "Ensuring Bluetooth is completely off before starting..."
+    sudo systemctl stop bluetooth 2>/dev/null
+    sudo rfkill block bluetooth
+    sleep 1
+
+    echo "Enabling Bluetooth..."
+    sudo rfkill unblock bluetooth
+    sudo systemctl start bluetooth
+    sleep 1
+
+    echo "Connecting to Nothing Ear (a)..."
+    bluetoothctl connect 3C:B0:ED:AF:08:B2
+}
+
+bt_off() {
+    echo "Disconnecting and turning off Bluetooth..."
+    bluetoothctl disconnect 3C:B0:ED:AF:08:B2 > /dev/null 2>&1
+    sudo systemctl stop bluetooth
+    sudo rfkill block bluetooth
+    echo "Bluetooth turned OFF."
+}
