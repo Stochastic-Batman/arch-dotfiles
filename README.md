@@ -73,7 +73,8 @@ sudo pacman -S \
   telegram-desktop steam \
   ttf-jetbrains-mono-nerd noto-fonts \
   texlive-basic texlive-latex texlive-latexrecommended texlive-latexextra \
-  texlive-fontsextra texlive-mathscience texlive-binextra texlive-langother
+  texlive-fontsextra texlive-mathscience texlive-binextra texlive-langother \
+  bluez bluez-utils pipewire-audio pipewire-pulse wireplumber gst-plugin-pipewire
 ```
 
 ### 3. AUR helper (paru)
@@ -102,6 +103,25 @@ echo 'eval $(opam env)' >> ~/.bashrc
 ssh-keygen -t ed25519 -C "EMAIL"
 cat ~/.ssh/id_ed25519.pub  # add this to GitHub -> Settings -> SSH keys
 git config --global url."git@github.com:".insteadOf "https://github.com/"
+```
+
+### 7. Bluetooth Connection Setup (for Earbuds)
+MAC address used here is a random MAC address for convenience:
+```bash
+sudo systemctl disable bluetooth
+sudo rfkill block bluetooth
+systemctl --user enable --now pipewire pipewire-pulse wireplumber
+# Put earbuds in the case, leave lid open, press the white button below the right earbud for 2 seconds until status LED flashes white.
+sudo rfkill unblock bluetooth
+sudo systemctl start bluetooth
+bluetoothctl
+[bluetoothctl]> power on
+[bluetoothctl]> agent on
+[bluetoothctl]> default-agent
+[bluetoothctl]> pair 3C:B0:ED:AF:08:B2
+[bluetoothctl]> trust 3C:B0:ED:AF:08:B2
+[bluetoothctl]> connect 3C:B0:ED:AF:08:B2
+[bluetoothctl]> exit
 ```
 
 ## Restore
