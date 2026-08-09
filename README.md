@@ -74,7 +74,8 @@ sudo pacman -S \
   ttf-jetbrains-mono-nerd noto-fonts \
   texlive-basic texlive-latex texlive-latexrecommended texlive-latexextra \
   texlive-fontsextra texlive-mathscience texlive-binextra texlive-langother \
-  bluez bluez-utils pipewire-audio pipewire-pulse wireplumber gst-plugin-pipewire
+  bluez bluez-utils pipewire-audio pipewire-pulse wireplumber gst-plugin-pipewire \
+  tlp tlr-rdw
 ```
 
 ### 3. AUR helper (paru)
@@ -123,6 +124,24 @@ bluetoothctl
 [bluetoothctl]> connect 3C:B0:ED:AF:08:B2
 [bluetoothctl]> exit
 ```
+
+### 8. Power management
+
+TLP runs on stock defaults - no `/etc/tlp.conf` changes needed:
+
+```bash
+sudo systemctl enable --now tlp
+sudo tlp-stat -s   # verify: should show "tlp = enabled"
+```
+
+Check the CPU driver is `amd-pstate-epp` (no kernel params needed if so):
+
+```bash
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_driver
+```
+
+Battery conservation mode is **off** by default and should stay off unless the laptop lives on AC. On `ideapad_laptop` the value is `0` (Standard) / `1` (Long_Life), *not* a percentage - set `STOP_CHARGE_THRESH_BAT0=1` in `/etc/tlp.conf` and run `sudo tlp start` only if you want it.
+
 
 ## Restore
 
