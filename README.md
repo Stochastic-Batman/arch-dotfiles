@@ -17,7 +17,9 @@ Each folder maps directly to its corresponding `~/.config/<folder>` directory.
 ```
 arch-dotfiles/
 ├── hypr/
+│   ├── hypridle.conf       # idle timings: lock, screen off, suspend
 │   ├── hyprland.lua        # Hyprland config (Lua-based)
+│   ├── hyprlock.conf       # lock screen appearance
 │   └── hyprpaper.conf      # Wallpaper config
 ├── kitty/
 │   └── kitty.conf          # Kitty terminal
@@ -142,6 +144,39 @@ cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_driver
 
 Battery conservation mode is **off** by default and should stay off unless the laptop lives on AC. On `ideapad_laptop` the value is `0` (Standard) / `1` (Long_Life), *not* a percentage - set `STOP_CHARGE_THRESH_BAT0=1` in `/etc/tlp.conf` and run `sudo tlp start` only if you want it.
 
+### 9. Suspend & lock on lid close
+
+Lid close is handled by `systemd-logind`. In `/etc/systemd/logind.conf`, uncomment:
+```ini
+HandleLidSwitch=suspend
+HandleLidSwitchExternalPower=suspend
+```
+```bash
+sudo systemctl restart systemd-logind
+```
+
+Idle behavior comes from `hypr/hypridle.conf` (lock at 5 min, screen off at 10,
+suspend at 30), with `hypr/hyprlock.conf` as the lock screen. `before_sleep_cmd`
+locks the session *before* suspending, so the laptop is never unlocked on resume.
+`hypridle` is started from the autostart block in `hyprland.lua`.
+
+Test `hyprlock` on its own before relying on it - a broken lock config locks you out
+of your session. Keep a TTY open (`Ctrl+Alt+F2`) as an escape hatch while testing:
+```bash
+hyprlock
+```
+
+Verify after a Hyprland restart:
+```bash
+pgrep -a hypridle          # should return a PID
+loginctl lock-session      # should lock immediately
+journalctl -b | grep -i "suspend\|lid" | tail -20   # after closing/reopening lid
+```
+
+> **Hibernate** is not configured. It needs a swapfile at least as large as RAM
+> (32 GB here; current swapfile is 4 GB), a `resume=` kernel parameter with
+> `resume_offset`, and the `resume` hook in `/etc/mkinitcpio.conf`. Suspend (s2idle)
+> is used instead - note s2idle still draws a few percent per hour.
 
 ## Restore
 
