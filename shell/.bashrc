@@ -185,3 +185,45 @@ bt_off() {
     sudo rfkill block bluetooth
     echo "Bluetooth turned OFF."
 }
+
+# TeX helper
+tex() {
+    local texfile="$1"
+    if [ -z "$texfile" ]; then
+        echo "Usage: tex <file.tex>"
+        return 1
+    fi
+    local base="${texfile%.tex}"
+
+    (
+        latexmk -pdf -pvc -interaction=nonstopmode -synctex=1 "$texfile" \
+            > "/tmp/${base##*/}_latexmk.log" 2>&1 &
+        local latexmk_pid=$!
+
+        # wait until the pdf exists AND its size has stopped changing,
+        # so we don't open a half-written file on the first compile
+        local prev_size=-1
+        local size=0
+        while true; do
+            if [ -f "${base}.pdf" ]; then
+                size=$(stat -c%s "${base}.pdf" 2>/dev/null)
+                if [ "$size" -gt 0 ] && [ "$size" = "$prev_size" ]; then
+                    break
+                fi
+                prev_size=$size
+            fi
+            sleep 0.5
+        done
+
+        okular "${base}.pdf" > /dev/null 2>&1
+
+        # okular closed -> stop latexmk and clean up build artifacts
+        kill "$latexmk_pid" 2>/dev/null
+        latexmk -c "$texfile" > /dev/null 2>&1
+        rm -f "${base}.log" "${base}.aux" "${base}.out" \
+              "${base}.fls" "${base}.fdb_latexmk" "${base}.synctex.gz"
+    ) &
+    disown
+
+    echo "tex: compiling $texfile in background, opening Okular once the first build finishes..."
+}
