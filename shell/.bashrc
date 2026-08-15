@@ -196,6 +196,7 @@ tex() {
     local base="${texfile%.tex}"
 
     (
+		rm -f "${base}.pdf"
         latexmk -pdf -pvc -interaction=nonstopmode -synctex=1 "$texfile" \
             > "/tmp/${base##*/}_latexmk.log" 2>&1 &
         local latexmk_pid=$!
