@@ -162,6 +162,18 @@ print(f"Updated '{filepath}' with entries for '{new_game}'")
 EOF
 }
 
+# --- GTU MICM VPN ---
+micm() {
+    sudo swanctl --load-all --noprompt > /dev/null
+    if sudo swanctl --initiate --child fortigate-child; then
+        vip=$(ip -4 -o addr show scope global | awk '$4 ~ /^172\.16\.0\./ {sub(/\/.*/,"",$4); print $4; exit}')
+        ssh -b "${vip}" besom@10.60.100.100
+        sudo swanctl --terminate --ike fortigate
+    else
+        echo "VPN connection failed"
+    fi
+}
+
 # --- Bluetooth Audio Toggle Functions ---
 bt_on() {
     echo "Ensuring Bluetooth is completely off before starting..."
