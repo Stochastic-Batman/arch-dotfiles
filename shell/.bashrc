@@ -174,7 +174,7 @@ micm() {
     fi
 }
 
-# --- Bluetooth Audio Toggle Functions ---
+# --- Bluetooth Functions ---
 bt_on() {
     echo "Ensuring Bluetooth is completely off before starting..."
     sudo systemctl stop bluetooth 2>/dev/null
@@ -193,6 +193,27 @@ bt_on() {
 bt_off() {
     echo "Disconnecting and turning off Bluetooth..."
     bluetoothctl disconnect 3C:B0:ED:AF:08:B2 > /dev/null 2>&1
+    sudo systemctl stop bluetooth
+    sudo rfkill block bluetooth
+    echo "Bluetooth turned OFF."
+}
+
+controller_on() {
+    echo "Ensuring Bluetooth is completely off before starting..."
+    sudo systemctl stop bluetooth 2>/dev/null
+    sudo rfkill block bluetooth
+    sleep 1
+    echo "Enabling Bluetooth..."
+    sudo rfkill unblock bluetooth
+    sudo systemctl start bluetooth
+    sleep 1
+    echo "Connecting to DualSense Wireless Controller..."
+    bluetoothctl connect A0:FA:9C:D3:8F:4B
+}
+
+controller_off() {
+    echo "Disconnecting and turning off Bluetooth..."
+    bluetoothctl disconnect A0:FA:9C:D3:8F:4B > /dev/null 2>&1
     sudo systemctl stop bluetooth
     sudo rfkill block bluetooth
     echo "Bluetooth turned OFF."
