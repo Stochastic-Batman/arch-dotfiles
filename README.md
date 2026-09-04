@@ -90,7 +90,7 @@ makepkg -si
 
 ### 4. AUR packages
 ```bash
-paru -S google-chrome shotcut discord localsend-bin
+paru -S google-chrome shotcut discord localsend-bin elan-lean-bin
 ```
 
 ### 5. OCaml LSP
@@ -177,6 +177,25 @@ journalctl -b | grep -i "suspend\|lid" | tail -20   # after closing/reopening li
 > (32 GB here; current swapfile is 4 GB), a `resume=` kernel parameter with
 > `resume_offset`, and the `resume` hook in `/etc/mkinitcpio.conf`. Suspend (s2idle)
 > is used instead - note s2idle still draws a few percent per hour.
+
+### 10. Lean 4
+```bash
+elan default stable
+```
+
+Verify:
+```bash
+lean --version
+lake --version
+```
+
+Creating a new project:
+```bash
+lake new project_name math
+cd project_name
+lake build
+```
+
 
 ## Restore
 
