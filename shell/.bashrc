@@ -64,7 +64,7 @@ open_spiel_copy() {
 
     sed -i "s/OPEN_SPIEL_GAMES_${src_upper}_H_/OPEN_SPIEL_GAMES_${dest_upper}_H_/g" "$dest_h"
 
-	local pyspiel_test="../python/tests/pyspiel_test.py"
+    local pyspiel_test="../python/tests/pyspiel_test.py"
     if [[ -f "$pyspiel_test" ]]; then
         awk -v new_game="$dest_base" '
         BEGIN { inserted = 0 }
@@ -174,50 +174,143 @@ micm() {
     fi
 }
 
-# --- Bluetooth Functions ---
-bt_on() {
-    echo "Ensuring Bluetooth is completely off before starting..."
-    sudo systemctl stop bluetooth 2>/dev/null
-    sudo rfkill block bluetooth
-    sleep 1
+micm_logs() {
+    vip=$(ip -4 -o addr show scope global | awk '$4 ~ /^172\.16\.0\./ {sub(/\/.*/,"",$4); print $4; exit}')
+    rsync -avz --progress -e "ssh -b ${vip}" besom@10.60.100.100:'~/EngageNet/logs/*.log' ~/Downloads/
+}
 
-    echo "Enabling Bluetooth..."
+# Created by `pipx` on 2026-07-30 17:03:10
+export PATH="$PATH:/home/lado/.local/bin"
+
+# --- Bluetooth Functions ---
+bt_radio_on() {
     sudo rfkill unblock bluetooth
     sudo systemctl start bluetooth
     sleep 1
-
-    echo "Connecting to Nothing Ear (a)..."
-    bluetoothctl connect 3C:B0:ED:AF:08:B2
 }
 
-bt_off() {
-    echo "Disconnecting and turning off Bluetooth..."
-    bluetoothctl disconnect 3C:B0:ED:AF:08:B2 > /dev/null 2>&1
+bt_radio_off() {
+    echo "Turning Bluetooth radio OFF (disconnects everything)..."
     sudo systemctl stop bluetooth
     sudo rfkill block bluetooth
-    echo "Bluetooth turned OFF."
+}
+
+# Full reset - use when a device refuses to connect
+bt_reset() {
+    echo "Resetting Bluetooth..."
+    sudo systemctl stop bluetooth 2>/dev/null
+    sudo rfkill block bluetooth
+    sleep 1
+    bt_radio_on
+}
+
+# --- Devices ---
+EARBUDS_MAC="3C:B0:ED:AF:08:B2"
+CONTROLLER_MAC="A0:FA:9C:D3:8F:4B"
+GF_EARBUDS_MAC="C4:A9:B8:DE:6A:4B"
+SPEAKER_SINK="alsa_output.pci-0000_04_00.6.HiFi__Speaker__sink"
+
+# Mute laptop speaker while ANY earbuds are connected; unmute when none are.
+# Deliberately ignores the controller.
+_speaker_auto() {
+    if bluetoothctl devices Connected | grep -qE "$EARBUDS_MAC|$GF_EARBUDS_MAC"; then
+        pactl set-sink-mute "$SPEAKER_SINK" 1
+        echo "Earbuds connected -> laptop speaker muted."
+    else
+        pactl set-sink-mute "$SPEAKER_SINK" 0
+        echo "No earbuds -> laptop speaker unmuted."
+    fi
+}
+
+_bt_connect() {
+    local mac="$1" name="$2"
+    if bluetoothctl devices Connected | grep -q "$mac"; then
+        echo "$name already connected."
+        return 0
+    fi
+    echo "Connecting to $name..."
+    bluetoothctl connect "$mac" > /dev/null 2>&1
+    sleep 2
+    bluetoothctl devices Connected | grep -q "$mac" \
+        && echo "$name connected." \
+        || echo "$name FAILED - try again or run bt_reset."
 }
 
 controller_on() {
-    echo "Ensuring Bluetooth is completely off before starting..."
-    sudo systemctl stop bluetooth 2>/dev/null
-    sudo rfkill block bluetooth
-    sleep 1
-    echo "Enabling Bluetooth..."
-    sudo rfkill unblock bluetooth
-    sudo systemctl start bluetooth
-    sleep 1
+    systemctl is-active --quiet bluetooth || bt_radio_on
     echo "Connecting to DualSense Wireless Controller..."
-    bluetoothctl connect A0:FA:9C:D3:8F:4B
+    bluetoothctl connect "$CONTROLLER_MAC"
 }
 
 controller_off() {
-    echo "Disconnecting and turning off Bluetooth..."
-    bluetoothctl disconnect A0:FA:9C:D3:8F:4B > /dev/null 2>&1
-    sudo systemctl stop bluetooth
-    sudo rfkill block bluetooth
-    echo "Bluetooth turned OFF."
+    echo "Disconnecting DualSense..."
+    bluetoothctl disconnect "$CONTROLLER_MAC" > /dev/null 2>&1
+    sleep 1
+    if [ -z "$(bluetoothctl devices Connected)" ]; then
+        echo "Nothing else connected - turning radio off."
+        bt_radio_off
+    else
+        echo "Still connected, leaving radio on:"
+        bluetoothctl devices Connected
+    fi
 }
+
+ear_on() {
+    systemctl is-active --quiet bluetooth || bt_radio_on
+    _bt_connect "$EARBUDS_MAC" "Nothing Ear (a)"
+    _speaker_auto
+}
+
+ear_off() {
+    echo "Disconnecting Nothing Ear (a)..."
+    bluetoothctl disconnect "$EARBUDS_MAC" > /dev/null 2>&1
+    sleep 1
+    _speaker_auto
+    if [ -z "$(bluetoothctl devices Connected)" ]; then
+        echo "Nothing else connected - turning radio off."
+        bt_radio_off
+    else
+        echo "Still connected, leaving radio on:"
+        bluetoothctl devices Connected
+    fi
+}
+
+gf_ear_on() {
+    systemctl is-active --quiet bluetooth || bt_radio_on
+    _bt_connect "$GF_EARBUDS_MAC" "JBL Vibe Beam 2"
+    _speaker_auto
+}
+
+gf_ear_off() {
+    echo "Disconnecting JBL Vibe Beam 2..."
+    bluetoothctl disconnect "$GF_EARBUDS_MAC" > /dev/null 2>&1
+    sleep 1
+    _speaker_auto
+    [ -z "$(bluetoothctl devices Connected)" ] && bt_radio_off
+}
+
+ear_both_on() {
+    systemctl is-active --quiet bluetooth || bt_radio_on
+    _bt_connect "$EARBUDS_MAC"    "Nothing Ear (a)"
+    _bt_connect "$GF_EARBUDS_MAC" "JBL Vibe Beam 2"
+    pactl set-default-sink combine_all_sinks
+    _speaker_auto
+    bluetoothctl devices Connected
+}
+
+ear_both_off() {
+    bluetoothctl disconnect "$EARBUDS_MAC"    > /dev/null 2>&1
+    bluetoothctl disconnect "$GF_EARBUDS_MAC" > /dev/null 2>&1
+    sleep 1
+    _speaker_auto
+    [ -z "$(bluetoothctl devices Connected)" ] && bt_radio_off
+    echo "Both disconnected."
+}
+
+bt_status() {
+    bluetoothctl devices Connected
+}
+
 
 # TeX helper
 tex() {
@@ -229,8 +322,8 @@ tex() {
     local base="${texfile%.tex}"
 
     (
-		rm -f "${base}.pdf"
-        latexmk -pdf -pvc -interaction=nonstopmode -synctex=1 "$texfile" \
+	rm -f "${base}.pdf"
+	latexmk -pdf -pvc -interaction=nonstopmode -synctex=1 "$texfile" \
             > "/tmp/${base##*/}_latexmk.log" 2>&1 &
         local latexmk_pid=$!
 
