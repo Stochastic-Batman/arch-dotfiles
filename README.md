@@ -199,19 +199,25 @@ lake build
 
 ## Restore
 
+> **Note:** Generate an SSH key on the new machine and add it to GitHub *before* running this - the clone uses SSH. See step 6 above.
+>
+> This replaces any existing `~/.bashrc`, `~/.bash_profile`, `~/.ssh/config`, and  `~/.config/{hypr,kitty,nvim,rofi,waybar,networkmanager-dmenu}`.
+> Back them up first if you care about them.
+
 Clone the repo and symlink each folder into `~/.config/`:
 
 ```bash
 git clone git@github.com:Stochastic-Batman/arch-dotfiles.git ~/arch-dotfiles
 cd ~/arch-dotfiles
 
-for dir in hypr kitty nvim rofi ssh waybar; do
-    ln -sf ~/arch-dotfiles/$dir ~/.config/$dir
+mkdir -p ~/.config ~/.ssh
+chmod 700 ~/.ssh
+
+for dir in hypr kitty nvim rofi waybar networkmanager-dmenu; do
+    ln -sfn ~/arch-dotfiles/$dir ~/.config/$dir
 done
 
 ln -sf ~/arch-dotfiles/shell/.bash_profile ~/.bash_profile
 ln -sf ~/arch-dotfiles/shell/.bashrc ~/.bashrc
 ln -sf ~/arch-dotfiles/ssh/config ~/.ssh/config
 ```
-
-> **Note:** Make sure to generate a new SSH key on the new machine and add it to GitHub before running the restore script.
