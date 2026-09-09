@@ -108,23 +108,30 @@ cat ~/.ssh/id_ed25519.pub  # add this to GitHub -> Settings -> SSH keys
 git config --global url."git@github.com:".insteadOf "https://github.com/"
 ```
 
-### 7. Bluetooth Connection Setup (for Earbuds)
-MAC address used here is a random MAC address for convenience:
+### 7. Bluetooth pairing (one-time, per device)
+
+Audio devices need PipeWire running:
 ```bash
-sudo systemctl disable bluetooth
-sudo rfkill block bluetooth
 systemctl --user enable --now pipewire pipewire-pulse wireplumber
-# Put earbuds in the case, leave lid open, press the white button below the right earbud for 2 seconds until status LED flashes white.
+```
+
+Put the device in pairing mode, then:
+```bash
 sudo rfkill unblock bluetooth
 sudo systemctl start bluetooth
 bluetoothctl
-[bluetoothctl]> power on
-[bluetoothctl]> agent on
-[bluetoothctl]> default-agent
-[bluetoothctl]> pair 3C:B0:ED:AF:08:B2
-[bluetoothctl]> trust 3C:B0:ED:AF:08:B2
-[bluetoothctl]> connect 3C:B0:ED:AF:08:B2
-[bluetoothctl]> exit
+```
+
+```
+power on
+agent on
+default-agent
+scan on          # wait for the device to appear, note its MAC
+scan off
+pair <MAC>
+trust <MAC>
+connect <MAC>
+exit
 ```
 
 ### 8. Power management
