@@ -52,7 +52,8 @@
         "format-wifi": "󰤨  {signalStrength}%",
         "format-ethernet": "󰈀  {ipaddr}",
         "format-disconnected": "󰤭  disconnected",
-        "tooltip-format-wifi": "{essid} ({signalStrength}%)"
+        "tooltip-format-wifi": "{essid} ({signalStrength}%)",
+        "on-click": "networkmanager_dmenu"
     },
 
     "pulseaudio": {
