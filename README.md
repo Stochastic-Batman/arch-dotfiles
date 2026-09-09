@@ -90,7 +90,7 @@ makepkg -si
 
 ### 4. AUR packages
 ```bash
-paru -S google-chrome shotcut discord localsend-bin elan-lean-bin
+paru -S google-chrome shotcut discord localsend-bin elan-lean-bin networkmanager-dmenu-git
 ```
 
 ### 5. OCaml LSP
