@@ -311,6 +311,13 @@ bt_status() {
     bluetoothctl devices Connected
 }
 
+audio_reset() {
+    pactl set-default-sink "$SPEAKER_SINK"
+    pactl set-sink-mute "$SPEAKER_SINK" 0
+    echo "Default sink -> laptop speaker, unmuted."
+    wpctl status | grep -A8 "Sinks:"
+}
+
 
 # TeX helper
 tex() {
