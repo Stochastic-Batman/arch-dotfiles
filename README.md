@@ -77,7 +77,7 @@ sudo pacman -S \
   texlive-basic texlive-latex texlive-latexrecommended texlive-latexextra \
   texlive-fontsextra texlive-mathscience texlive-binextra texlive-langother \
   bluez bluez-utils pipewire-audio pipewire-pulse wireplumber gst-plugin-pipewire \
-  tlp tlr-rdw
+  tlp tlr-rdw flameshot
 ```
 
 ### 3. AUR helper (paru)
