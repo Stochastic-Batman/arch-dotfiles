@@ -361,3 +361,15 @@ tex() {
 
     echo "tex: compiling $texfile in background, opening Okular once the first build finishes..."
 }
+
+
+open() {
+    if [ $# -eq 0 ]; then
+        xdg-open . >/dev/null 2>&1 &
+    else
+        for f in "$@"; do
+            xdg-open "$f" >/dev/null 2>&1 &
+        done
+    fi
+    disown -a 2>/dev/null
+}
