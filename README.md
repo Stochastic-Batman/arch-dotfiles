@@ -77,7 +77,8 @@ sudo pacman -S \
   texlive-basic texlive-latex texlive-latexrecommended texlive-latexextra \
   texlive-fontsextra texlive-mathscience texlive-binextra texlive-langother \
   bluez bluez-utils pipewire-audio pipewire-pulse wireplumber gst-plugin-pipewire \
-  tlp tlr-rdw flameshot
+  tlp tlr-rdw flameshot \
+  libreoffice-fresh hunspell-de hunspell-en_us hyphen-de mythes-de xdg-utils
 ```
 
 ### 3. AUR helper (paru)
@@ -203,6 +204,40 @@ cd project_name
 lake build
 ```
 
+### 11. Default applications
+
+`open <file>` is a `.bashrc` function wrapping `xdg-open`, so the defaults below decide which app launches. PDFs and e-books go to Okular, Word/ODT documents to LibreOffice Writer:
+
+```bash
+for t in application/pdf image/vnd.djvu image/vnd.djvu+multipage application/epub+zip; do
+    xdg-mime default org.kde.okular.desktop $t
+done
+
+for t in application/vnd.openxmlformats-officedocument.wordprocessingml.document \
+         application/msword application/vnd.oasis.opendocument.text; do
+    xdg-mime default libreoffice-writer.desktop $t
+done
+```
+
+Verify:
+```bash
+xdg-mime query default application/pdf    # org.kde.okular.desktop
+xdg-mime query default application/vnd.openxmlformats-officedocument.wordprocessingml.document   # libreoffice-writer.desktop
+```
+
+German spell-checking in LibreOffice: `hunspell-de`, `hunspell-en_us`, `hyphen-de` and `mythes-de` are installed by the pacman line above. In Writer, enable the dictionaries under Tools -> Options -> Language Settings -> Writing Aids, and toggle automatic checking with `Shift+F7`.
+
+### 12. Screenshots
+
+Flameshot is bound in `hyprland.lua`. Create the target folder first:
+```bash
+mkdir -p ~/Pictures/Screenshots
+```
+
+| Key | Action |
+|---|---|
+| `SUPER + CTRL + P` | Full-screen shot, saved to `~/Pictures/Screenshots` and copied to the clipboard |
+| `SUPER + ALT + P` | Region-select GUI |
 
 ## Restore
 
