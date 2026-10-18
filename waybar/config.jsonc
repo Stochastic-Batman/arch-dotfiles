@@ -19,7 +19,22 @@
 
     "clock": {
         "format": "󰃭  {:%a %d %b  󱑂  %H:%M}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    	"calendar": {
+    	   "mode": "month",
+    	   "first-day-of-week": 1,
+    	   "on-scroll": 1,
+    	   "format": {
+    		"months":   "<span color='#7232ad'><b>{}</b></span>",
+    		"weekdays": "<span color='#a78bfa'>{}</span>",
+    		"today":    "<span color='#ffffff'><b><u>{}</u></b></span>"
+    	   }
+    	},
+    	"actions": {
+    	   "on-scroll-up": "shift_down",
+    	   "on-scroll-down": "shift_up",
+    	   "on-click-middle": "shift_reset"
+    	}
     },
 
     "cpu": {
