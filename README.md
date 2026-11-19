@@ -21,6 +21,8 @@ arch-dotfiles/
 │   ├── hyprland.lua        # Hyprland config (Lua-based)
 │   ├── hyprlock.conf       # lock screen appearance
 │   └── hyprpaper.conf      # Wallpaper config
+├── applications/
+│   └── en-croissant.desktop   # rofi/drun entry for the En Croissant AppImage
 ├── kitty/
 │   └── kitty.conf          # Kitty terminal
 ├── nvim/
@@ -40,7 +42,7 @@ arch-dotfiles/
 ├── rofi/
 │   └── config.rasi         # rofi launcher theme
 ├── shell/
-|   ├── .bashrc             # opam's auto generated messsage + custom OpenSpiel helpers
+|   ├── .bashrc             # opam env, tex(), open(), croissant_update(), Bluetooth + audio helpers
 │   └── .bash_profile       # auto-login + auto-start Hyprland on tty1
 ├── ssh/
 │   └── config              # GitHub uses ed25519 key
@@ -77,7 +79,7 @@ sudo pacman -S \
   texlive-basic texlive-latex texlive-latexrecommended texlive-latexextra \
   texlive-fontsextra texlive-mathscience texlive-binextra texlive-langother \
   bluez bluez-utils pipewire-audio pipewire-pulse wireplumber gst-plugin-pipewire \
-  tlp tlr-rdw flameshot \
+  tlp tlr-rdw flameshot fuse2 wev \
   libreoffice-fresh hunspell-de hunspell-en_us hyphen-de mythes-de xdg-utils
 ```
 
@@ -239,6 +241,36 @@ mkdir -p ~/Pictures/Screenshots
 | `SUPER + CTRL + P` | Full-screen shot, saved to `~/Pictures/Screenshots` and copied to the clipboard |
 | `SUPER + ALT + P` | Region-select GUI |
 
+### 13. En Croissant (offline chess, AppImage)
+
+The AppImage is not in the repo. Download it from the [En Croissant releases](https://github.com/franciscoBSalgueiro/en-croissant/releases) and place it here:
+
+```bash
+mkdir -p ~/AppFiles/EnCroissant
+mv ~/Downloads/en-croissant_*_amd64.AppImage ~/AppFiles/EnCroissant/EnCroissant.AppImage
+chmod +x ~/AppFiles/EnCroissant/EnCroissant.AppImage
+```
+
+Extract the icon once (needs `fuse2`):
+
+```bash
+cd /tmp
+~/AppFiles/EnCroissant/EnCroissant.AppImage --appimage-extract >/dev/null
+mkdir -p ~/.local/share/icons/hicolor/256x256/apps
+cp squashfs-root/usr/share/icons/hicolor/256x256@2/apps/en-croissant.png ~/.local/share/icons/hicolor/256x256/apps/en-croissant.png
+rm -rf squashfs-root
+```
+
+The launcher entry is `applications/en-croissant.desktop` (linked in the Restore step below), so it shows up in rofi (`SUPER+R`).
+
+Update to a new version with the `.bashrc` helper:
+
+```bash
+croissant_update 0.17.0
+```
+
+Games and databases live in the app's own data folder, so they survive updates.
+
 ## Restore
 
 > **Note:** Generate an SSH key on the new machine and add it to GitHub *before* running this - the clone uses SSH. See step 6 above.
@@ -262,4 +294,9 @@ done
 ln -sf ~/arch-dotfiles/shell/.bash_profile ~/.bash_profile
 ln -sf ~/arch-dotfiles/shell/.bashrc ~/.bashrc
 ln -sf ~/arch-dotfiles/ssh/config ~/.ssh/config
+
+# for En Croissant
+mkdir -p ~/.local/share/applications
+ln -sf ~/arch-dotfiles/applications/en-croissant.desktop ~/.local/share/applications/en-croissant.desktop
+update-desktop-database ~/.local/share/applications
 ```
