@@ -373,3 +373,10 @@ open() {
     fi
     disown -a 2>/dev/null
 }
+
+croissant_update() {
+    local v="$1"
+    [ -z "$v" ] && { echo "usage: croissant_update 0.17.0"; return 1; }
+    cd ~/AppFiles/EnCroissant || return 1
+    curl -L -o EnCroissant.AppImage "https://github.com/franciscoBSalgueiro/en-croissant/releases/download/v${v}/en-croissant_${v}_amd64.AppImage" && chmod +x EnCroissant.AppImage
+}
