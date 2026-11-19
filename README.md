@@ -16,15 +16,17 @@ Each folder maps directly to its corresponding `~/.config/<folder>` directory.
 
 ```
 arch-dotfiles/
+├── applications/
+│   └── en-croissant.desktop   # rofi/drun entry for the En Croissant AppImage
 ├── hypr/
 │   ├── hypridle.conf       # idle timings: lock, screen off, suspend
 │   ├── hyprland.lua        # Hyprland config (Lua-based)
 │   ├── hyprlock.conf       # lock screen appearance
 │   └── hyprpaper.conf      # Wallpaper config
-├── applications/
-│   └── en-croissant.desktop   # rofi/drun entry for the En Croissant AppImage
 ├── kitty/
 │   └── kitty.conf          # Kitty terminal
+├── networkmanager-dmenu/
+│   └── config.ini          # dmenu_command = rofi (wifi picker for waybar)
 ├── nvim/
 │   ├── init.lua            # entry point
 │   ├── lazy-lock.json      # plugin lockfile
@@ -35,14 +37,18 @@ arch-dotfiles/
 │       │   └── options.lua
 │       └── plugins/        # per-plugin configs
 │           ├── colors.lua
+│           ├── lean.lua        # lean.nvim (Lean 4)
 │           ├── lsp.lua
 │           ├── oneliners.lua
 │           ├── telescope.lua
 │           └── treesitter.lua
+├── pipewire/
+│   └── pipewire.conf.d/
+│       └── combine-all-sinks.conf   # virtual sink: output to both earbuds
 ├── rofi/
 │   └── config.rasi         # rofi launcher theme
 ├── shell/
-|   ├── .bashrc             # opam env, tex(), open(), croissant_update(), Bluetooth + audio helpers
+│   ├── .bashrc            # opam env, tex(), open(), croissant_update(), Bluetooth + audio helpers
 │   └── .bash_profile       # auto-login + auto-start Hyprland on tty1
 ├── ssh/
 │   └── config              # GitHub uses ed25519 key
@@ -67,6 +73,7 @@ sudo pacman -S \
   base-devel git neovim \
   mesa vulkan-radeon libva-mesa-driver \
   pipewire pipewire-pulse pipewire-alsa wireplumber \
+  bluez bluez-utils pipewire-audio gst-plugin-pipewire \
   hyprland kitty waybar rofi-wayland hyprpaper hyprlock hypridle \
   xdg-desktop-portal-hyprland qt5-wayland qt6-wayland polkit-kde-agent \
   grim slurp swappy wl-clipboard \
@@ -78,8 +85,7 @@ sudo pacman -S \
   ttf-jetbrains-mono-nerd noto-fonts \
   texlive-basic texlive-latex texlive-latexrecommended texlive-latexextra \
   texlive-fontsextra texlive-mathscience texlive-binextra texlive-langother \
-  bluez bluez-utils pipewire-audio pipewire-pulse wireplumber gst-plugin-pipewire \
-  tlp tlr-rdw flameshot fuse2 wev \
+  tlp tlp-rdw flameshot fuse2 wev \
   libreoffice-fresh hunspell-de hunspell-en_us hyphen-de mythes-de xdg-utils
 ```
 
@@ -287,7 +293,7 @@ cd ~/arch-dotfiles
 mkdir -p ~/.config ~/.ssh
 chmod 700 ~/.ssh
 
-for dir in hypr kitty nvim rofi waybar networkmanager-dmenu; do
+for dir in hypr kitty nvim rofi waybar networkmanager-dmenu pipewire; do
     ln -sfn ~/arch-dotfiles/$dir ~/.config/$dir
 done
 
